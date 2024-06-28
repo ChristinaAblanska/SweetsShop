@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.security.core.userdetails.User;
+
 
 import java.time.LocalDate;
 
@@ -32,13 +32,13 @@ public class AccountHistory {
     @JdbcTypeCode(SqlTypes.DATE)
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn(name="fromAccount", referencedColumnName = "iban")
-    private BankAccount fromAccount;
-
-    @ManyToOne
-    @JoinColumn(name="toAccount", referencedColumnName = "iban")
-    private BankAccount toAccount;
+//    @ManyToOne
+//    @JoinColumn(name="fromAccount", referencedColumnName = "iban")
+//    private BankAccount fromAccount;
+//
+//    @ManyToOne
+//    @JoinColumn(name="toAccount", referencedColumnName = "iban")
+//    private BankAccount toAccount;
 
     @NotNull(message = "Amount is mandatory")
     @Positive(message = "Amount must be positive")
@@ -51,8 +51,8 @@ public class AccountHistory {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private String currency;
 
-    @ManyToOne
-    @JoinColumn(name="toUser", referencedColumnName = "userId")
-    private User toUser;
+//    @ManyToOne
+//    @JoinColumn(name="toUser", referencedColumnName = "userId")
+//    private User toUser;
 
 }
