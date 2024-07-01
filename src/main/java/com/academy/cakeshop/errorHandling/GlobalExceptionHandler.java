@@ -27,6 +27,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<String>(failedMoneyTransaction.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<String> IllegalStateException(IllegalStateException illegalStateException) {
+        return new ResponseEntity<String>(illegalStateException.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         List<ObjectError> errors = ex.getBindingResult().getAllErrors();
