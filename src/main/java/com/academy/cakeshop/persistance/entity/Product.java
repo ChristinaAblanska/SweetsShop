@@ -35,4 +35,6 @@ public class Product {
     @ManyToMany(mappedBy = "products")
     private Set<Recipe> recipes = new LinkedHashSet<>();
 
+    public Product(long l, String sugar, Object o) {
+    }
 }
