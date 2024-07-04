@@ -1,12 +1,16 @@
 package com.academy.cakeshop.persistance.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.Set;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -21,6 +25,10 @@ public class Unit {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Product> products;
+    @Column(name = "base_quantity", nullable = false)
+    @JdbcTypeCode(SqlTypes.DECIMAL)
+    private Double baseQuantity;
+
+//    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private Set<Product> products;
 }
