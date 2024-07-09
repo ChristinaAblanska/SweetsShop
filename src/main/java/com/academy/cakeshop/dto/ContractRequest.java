@@ -1,6 +1,7 @@
 package com.academy.cakeshop.dto;
 
 import com.academy.cakeshop.validation.ValidContractPeriod;
+import com.academy.cakeshop.validation.ValidContractStatus;
 import com.academy.cakeshop.validation.ValidCurrency;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +15,9 @@ public record ContractRequest(
         String currency,
         @ValidContractPeriod
         @NotBlank(message = "Required field!")
-        String contractPeriod
+        String contractPeriod,
+        @ValidContractStatus
+        @NotBlank(message = "Required field!")
+        String contractStatus
 )
 {}

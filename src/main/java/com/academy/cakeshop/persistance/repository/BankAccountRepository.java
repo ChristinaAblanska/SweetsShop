@@ -11,17 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 public interface BankAccountRepository extends JpaRepository<BankAccount, Long> {
     @Transactional
     @Modifying
-    @Query("update BankAccount b set b.currency = ?1")
-    int updateCurrencyBy(Currency currency);
+    @Query("update BankAccount b set b.currency = ?1 where b.user.id = ?2")
+    int updateCurrencyBy(Currency currency, Long userId);
 
     @Transactional
     @Modifying
-    @Query("update BankAccount b set b.balance = ?1 where b.id = ?2")
-    int updateBalanceBy(Double balance, Long id);
+    @Query("update BankAccount b set b.balance = ?1 where b.user.id = ?2")
+    int updateBalanceBy(Double balance, Long userID);
 
     @Query("select b from BankAccount b where b.iban = ?1")
     BankAccount findByIbanEquals(String iban);
 
     @Query("select b from BankAccount b where b.user.id = ?1")
     BankAccount findByUserID(Long id);
+
+    @Query("select b from BankAccount b where b.iban = ?1")
+    BankAccount findByIBAN(String iban);
 }
