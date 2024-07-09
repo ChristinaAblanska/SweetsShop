@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Table(name = "payment")
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
@@ -27,22 +27,17 @@ public class Payment {
     @JdbcTypeCode(SqlTypes.DATE)
     private LocalDate date;
 
-    // TODO how to validate the contract?
     @ManyToOne(optional = false)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 
-    // TODO how to validate the account from the db?
     @ManyToOne(optional = false)
-    @JoinColumn(name = "bank_account_id", nullable = false)
-    // TODO how to name the column in the new table???
+    @JoinColumn(name = "account_source_id", nullable = false)
     private BankAccount fromBankAccount;
 
-//    // TODO how to validate the account from the db?
-//    @ManyToOne(optional = false)
-//    @JoinColumn(name = "bank_account_id", nullable = false)
-//    // TODO how to name the column in the new table???
-//    private BankAccount toBankAccount;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "account_destination_id", nullable = false)
+    private BankAccount toBankAccount;
 
     @Column(name = "amount", nullable = false)
     @JdbcTypeCode(SqlTypes.DECIMAL)

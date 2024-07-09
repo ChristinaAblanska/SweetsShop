@@ -7,14 +7,21 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
 
-    @Transactional
-    @Modifying
-    @Query("update Contract c set c.contractStatus = ?1")
-    int updateContractStatusBy(ContractStatus contractStatus);
 
     @Query("select c from Contract c where c.user.id = ?1")
     Contract findByUserID(Long id);
+
+    @Transactional
+    @Modifying
+    @Query("update Contract c set c.contractStatus = ?1 where c.id = ?2")
+    int updateContractStatusById(ContractStatus contractStatus, Long id);
+
+    @Query("select c from Contract c where c.user.id = ?1")
+    List<Contract> findAllByUserId(Long id);
 }
