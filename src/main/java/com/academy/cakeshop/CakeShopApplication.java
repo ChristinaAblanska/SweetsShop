@@ -17,5 +17,4 @@ public class CakeShopApplication {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
 }

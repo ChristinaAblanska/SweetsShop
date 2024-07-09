@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumber, String> {
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return s.matches("/(\\+)?(359|0)8[789]\\d{1}(|-| )\\d{3}(|-| )\\d{3}/");
+        return true;
+//        return s.matches("/08[7-9][0-9]{7}/");
     }
 }

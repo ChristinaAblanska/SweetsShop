@@ -18,25 +18,25 @@ import java.time.LocalDate;
 @Table(name = "purchase_order")
 public class PurchaseOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "purchaseOrderID", nullable = false)
     private Long id;
 
     @NotNull(message = "Quantity is mandatory")
     @Positive(message = "Quantity must be positive")
-    @Column(name="quantity", nullable=false)
+    @Column(name = "quantity", nullable = false)
     @JdbcTypeCode(SqlTypes.INTEGER)
     private int quantity;
 
     @NotNull(message = "Price is mandatory")
     @Positive(message = "Price must be positive")
-    @Column(name="price", nullable=false)
+    @Column(name = "price", nullable = false)
     @JdbcTypeCode(SqlTypes.DECIMAL)
     private double price;
 
     @NotNull(message = "Status is mandatory")
     @Enumerated(EnumType.STRING)
-     @Column(name="status",nullable = false)
+    @Column(name = "status", nullable = false)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private BankAccountStatus bankAccountStatus;
 
@@ -46,15 +46,15 @@ public class PurchaseOrder {
     private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name="productID",referencedColumnName = "productId")
+    @JoinColumn(name = "productID", referencedColumnName = "id")
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name="unitID",referencedColumnName = "unitID")
+    @JoinColumn(name = "unitID", referencedColumnName = "id")
     private Unit unit;
 
     @ManyToOne
-    @JoinColumn(name="contractID",referencedColumnName = "contractID")
+    @JoinColumn(name = "contractID", referencedColumnName = "id")
     private Contract contract;
 
 

@@ -18,7 +18,7 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "bank_account")
 public class BankAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
@@ -40,8 +40,7 @@ public class BankAccount {
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private BankAccountStatus bankAccountStatus;
 
-    // TODO: How to validate the user owner of the account?
     @OneToOne(optional = false, orphanRemoval = true)
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(nullable = false)
     private User user;
 }
