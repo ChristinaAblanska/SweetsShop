@@ -13,7 +13,6 @@ import java.util.Set;
 @Entity
 @Table(name = "units")
 public class Unit {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
