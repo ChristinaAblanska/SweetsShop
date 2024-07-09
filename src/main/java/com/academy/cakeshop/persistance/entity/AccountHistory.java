@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @Table(name = "account_history")
 public class AccountHistory {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "accountID", nullable = false,unique = true)
     private Long id;
 

@@ -18,7 +18,7 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "user_cake_store")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
