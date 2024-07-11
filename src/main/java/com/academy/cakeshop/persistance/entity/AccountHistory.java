@@ -24,7 +24,7 @@ import java.time.LocalDate;
 public class AccountHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "accountID", nullable = false,unique = true)
+    @Column(name = "accountId", nullable = false,unique = true)
     private Long id;
 
     @NotNull(message = "Date is mandatory")
@@ -32,13 +32,13 @@ public class AccountHistory {
     @JdbcTypeCode(SqlTypes.DATE)
     private LocalDate date;
 
-//    @ManyToOne
-//    @JoinColumn(name="fromAccount", referencedColumnName = "iban")
-//    private BankAccount fromAccount;
-//
-//    @ManyToOne
-//    @JoinColumn(name="toAccount", referencedColumnName = "iban")
-//    private BankAccount toAccount;
+    @ManyToOne
+    @JoinColumn(name="fromAccount", referencedColumnName = "iban")
+    private BankAccount fromAccount;
+
+    @ManyToOne
+    @JoinColumn(name="toAccount", referencedColumnName = "iban")
+    private BankAccount toAccount;
 
     @NotNull(message = "Amount is mandatory")
     @Positive(message = "Amount must be positive")

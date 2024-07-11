@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ArticleResponseDTO {
-    private Long id;
     private String articleName;
     private Double price;
     private Long productId;

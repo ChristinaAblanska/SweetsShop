@@ -12,11 +12,12 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PurchaseOrderResponseDTO {
+    private Long id;
     private Integer quantity;
     private Double price;
     private LocalDate date;
+    private String status;
     private Long productId;
-    private String productName;
     private Long unitId;
-    private String unitName;
+    private Long contractId;
 }

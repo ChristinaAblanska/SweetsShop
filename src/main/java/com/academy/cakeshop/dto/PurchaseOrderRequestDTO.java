@@ -1,6 +1,5 @@
 package com.academy.cakeshop.dto;
 
-import com.academy.cakeshop.validation.ValidDate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,9 +27,19 @@ public class PurchaseOrderRequestDTO {
     @NotBlank(message = "Date is mandatory")
     private LocalDate date;
 
+    @NotBlank(message = "Status is mandatory")
+    private String status;
+
     @NotNull(message = "Product ID is mandatory")
     private Long productId;
 
     @NotNull(message = "Unit ID is mandatory")
     private Long unitId;
+
+    @NotNull(message = "Status is mandatory")
+    private String bankAccountStatus;
+
+    @NotNull(message = "Contract ID is mandatory")
+    private Long contractId;
+
 }

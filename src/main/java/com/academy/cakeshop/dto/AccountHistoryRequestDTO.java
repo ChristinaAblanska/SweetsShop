@@ -1,9 +1,6 @@
 package com.academy.cakeshop.dto;
 
 import com.academy.cakeshop.validation.IBAN;
-import com.academy.cakeshop.validation.ValidAmount;
-import com.academy.cakeshop.validation.ValidCurrency;
-import com.academy.cakeshop.validation.ValidDate;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
