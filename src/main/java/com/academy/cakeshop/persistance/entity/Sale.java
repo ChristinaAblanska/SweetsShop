@@ -39,6 +39,6 @@ public class Sale {
     private double amount;
 
     @ManyToOne
-    @JoinColumn(name="articleID",referencedColumnName = "articleID")
+    @JoinColumn(name="articleId",referencedColumnName = "articleId")
     private Article article;
 }

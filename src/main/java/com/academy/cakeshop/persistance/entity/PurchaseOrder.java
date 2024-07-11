@@ -46,15 +46,15 @@ public class PurchaseOrder {
     private LocalDate date;
 
     @ManyToOne
-    @JoinColumn(name = "productID", referencedColumnName = "id")
+    @JoinColumn(name = "productId", referencedColumnName = "id")
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "unitID", referencedColumnName = "id")
+    @JoinColumn(name = "unitId", referencedColumnName = "id")
     private Unit unit;
 
     @ManyToOne
-    @JoinColumn(name = "contractID", referencedColumnName = "id")
+    @JoinColumn(name = "contractId", referencedColumnName = "id")
     private Contract contract;
 
 
