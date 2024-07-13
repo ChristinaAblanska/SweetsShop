@@ -1,39 +1,46 @@
 package com.academy.cakeshop.service;
 
+import com.academy.cakeshop.dto.RecipeDTO;
+import com.academy.cakeshop.errorHandling.BusinessNotFound;
 import com.academy.cakeshop.persistance.entity.Recipe;
 import com.academy.cakeshop.persistance.repository.RecipeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RecipeService {
-
-    @Autowired
     private RecipeRepository recipeRepository;
 
     public RecipeService(RecipeRepository recipeRepository) {
+        this.recipeRepository = recipeRepository;
     }
 
     public Recipe createRecipe(Recipe recipe) {
         return recipeRepository.save(recipe);
     }
 
-    public Optional<Recipe> getRecipeById(Long id) {
-        return recipeRepository.findById(id);
+    public Recipe getRecipeById(Long id) {
+        Recipe recipe = recipeRepository.getReferenceById(id);
+        if (recipe != null){
+            return  recipe;
+        }else {
+            throw new BusinessNotFound("Recipe ID does not exist!");
+        }
     }
 
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
 
-    public Recipe updateRecipe(Long id, Recipe recipeDetails) {
-        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
-        recipe.setName(recipeDetails.getName());
-        return recipeRepository.save(recipe);
+    public Recipe updateRecipe(Long id, RecipeDTO recipeDetails) {
+        Recipe recipe = recipeRepository.getReferenceById(id);
+        if (recipe != null){
+            recipe.setName(recipeDetails.name());
+            return recipeRepository.save(recipe);
+        }else{
+            throw new BusinessNotFound("No Recipe with ID: " + id + " Found!");
+        }
     }
 
     public void deleteRecipe(Long id) {

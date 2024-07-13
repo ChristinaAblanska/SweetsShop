@@ -1,6 +1,7 @@
 package com.academy.cakeshop.persistance.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -31,10 +33,4 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unit_id")
     private Unit unit;
-
-    @ManyToMany(mappedBy = "products")
-    private Set<Recipe> recipes = new LinkedHashSet<>();
-
-    public Product(long l, String sugar, Object o) {
-    }
 }

@@ -1,5 +1,6 @@
 package com.academy.cakeshop.service;
 
+import com.academy.cakeshop.dto.UnitDTO;
 import com.academy.cakeshop.errorHandling.BusinessNotFound;
 import com.academy.cakeshop.persistance.entity.Unit;
 import com.academy.cakeshop.persistance.repository.UnitRepository;
@@ -12,7 +13,6 @@ import java.util.Optional;
 
 @Service
 public class UnitService {
-
     private UnitRepository unitRepository;
 
     public UnitService(UnitRepository unitRepository) {
@@ -20,7 +20,6 @@ public class UnitService {
     }
 
     public Unit createUnit(Unit unit) {
-
         return unitRepository.save(unit);
     }
 
@@ -44,14 +43,13 @@ public class UnitService {
         }
     }
 
-    public Unit updateUnit(Long id, Unit unitDetails) {
+    public Unit updateUnit(Long id, UnitDTO unitDetails) {
         Unit unit = unitRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Unit not found"));
-        unit.setName(unitDetails.getName());
+        unit.setName(unitDetails.name());
         return unitRepository.save(unit);
     }
 
     public void deleteUnit(Long id) {
-
         unitRepository.deleteById(id);
     }
 }
