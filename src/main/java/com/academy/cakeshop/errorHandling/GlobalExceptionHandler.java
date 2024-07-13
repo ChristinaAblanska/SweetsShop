@@ -26,6 +26,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> FailedMoneyTransactionHandler(FailedMoneyTransaction failedMoneyTransaction) {
         return new ResponseEntity<String>(failedMoneyTransaction.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
     }
+    @ExceptionHandler
+    public ResponseEntity<String> QuantityTooLowHandler(QuantityTooLow quantityTooLow) {
+        return new ResponseEntity<String>(quantityTooLow.getMessage(), HttpStatus.INSUFFICIENT_STORAGE);
+    }
 
     @ExceptionHandler
     public ResponseEntity<String> IllegalStateException(IllegalStateException illegalStateException) {
