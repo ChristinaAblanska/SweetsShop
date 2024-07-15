@@ -59,11 +59,9 @@ public class PaymentController {
     @PreAuthorize("hasRole='STORE'")
     public ResponseEntity<String> distributeIncome(
             @RequestParam("saleDate") LocalDate saleDate,
-            @RequestParam("storeAccountId1") Long storeAccountId1,
-            @RequestParam("storeAccountId2") Long storeAccountId2,
             @RequestParam("rentAmount") double rentAmount) {
         try {
-            rentService.distributeIncome(saleDate, storeAccountId1, storeAccountId2, rentAmount);
+            rentService.distributeIncome(saleDate, rentAmount);
             return ResponseEntity.ok("Income distributed successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error distributing income: " + e.getMessage());
