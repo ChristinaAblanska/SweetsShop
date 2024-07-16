@@ -40,6 +40,19 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @PostMapping("/income")
+    @PreAuthorize("hasRole='STORE'")
+    public ResponseEntity<String> distributeIncome(
+            @RequestParam("saleDate") LocalDate saleDate,
+            @RequestParam("rentAmount") double rentAmount) {
+        try {
+            rentService.distributeIncome(saleDate, rentAmount);
+            return ResponseEntity.ok("Income distributed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error distributing income: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDetails) {
         try {
