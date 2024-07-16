@@ -4,20 +4,20 @@ import com.academy.cakeshop.validation.ValidContractPeriod;
 import com.academy.cakeshop.validation.ValidContractStatus;
 import com.academy.cakeshop.validation.ValidCurrency;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ContractRequest(
-        @NotBlank(message = "Required field!")
+        @NotNull(message = "Required field!")
         @Min(value = 1, message = "Minimal contract sum = 1!")
         Double contractSum,
         @ValidCurrency
-        @NotBlank(message = "Required field!")
+        @NotNull(message = "Required field!")
         String currency,
         @ValidContractPeriod
-        @NotBlank(message = "Required field!")
+        @NotNull(message = "Required field!")
         String contractPeriod,
         @ValidContractStatus
-        @NotBlank(message = "Required field!")
+        @NotNull(message = "Required field!")
         String contractStatus
 )
 {}

@@ -1,18 +1,14 @@
 package com.academy.cakeshop.service;
 
-import com.academy.cakeshop.dto.UserRequest;
 import com.academy.cakeshop.dto.UserResponse;
 import com.academy.cakeshop.enumeration.Role;
 import com.academy.cakeshop.errorHandling.BusinessNotFound;
 import com.academy.cakeshop.persistance.entity.User;
 import com.academy.cakeshop.persistance.repository.UserRepository;
-import com.sun.source.tree.ModuleTree;
+import com.academy.cakeshop.mail.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -20,22 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 class UserServiceTest {
-    @InjectMocks
     UserService userService;
-    @Mock
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    BankAccountService bankAccountService;
+    ContractService contractService;
+    EmailService emailService;
+
 
 
     @BeforeEach
     void setUp() {
         userRepository = Mockito.mock(UserRepository.class);
+        bankAccountService = Mockito.mock(BankAccountService.class);
+        contractService = Mockito.mock(ContractService.class);
+        emailService = Mockito.mock(EmailService.class);
         passwordEncoder = new BCryptPasswordEncoder();
-        userService = new UserService(userRepository, passwordEncoder);
+        userService = new UserService(userRepository, passwordEncoder, bankAccountService, contractService, emailService);
     }
 
     @Test
@@ -246,7 +245,7 @@ class UserServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-//    TODO How to test delete, ask Nadeto
+    //    TODO How to test delete, ask Nadeto
     @Test
     void givenValidId_whenDeletingUserById_thenDeleteUser() {
         Long id = 1L;

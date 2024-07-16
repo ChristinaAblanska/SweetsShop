@@ -1,20 +1,17 @@
 package com.academy.cakeshop.service;
 
-import com.academy.cakeshop.dto.ContractResponse;
+import com.academy.cakeshop.dto.PaymentRequest;
 import com.academy.cakeshop.dto.PaymentResponse;
 import com.academy.cakeshop.enumeration.*;
 import com.academy.cakeshop.errorHandling.BusinessNotFound;
+import com.academy.cakeshop.mail.EmailService;
 import com.academy.cakeshop.persistance.entity.BankAccount;
 import com.academy.cakeshop.persistance.entity.Contract;
 import com.academy.cakeshop.persistance.entity.Payment;
 import com.academy.cakeshop.persistance.entity.User;
-import com.academy.cakeshop.persistance.repository.BankAccountRepository;
-import com.academy.cakeshop.persistance.repository.ContractRepository;
-import com.academy.cakeshop.persistance.repository.PaymentRepository;
+import com.academy.cakeshop.persistance.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.time.LocalDate;
@@ -22,23 +19,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class PaymentServiceTest {
-    @InjectMocks
     PaymentService paymentService;
-    @Mock
     PaymentRepository paymentRepository;
-    @Mock
     BankAccountRepository bankAccountRepository;
-    @Mock
     ContractRepository contractRepository;
+    AccountHistoryRepository accountHistoryRepository;
+    UserRepository userRepository;
+    EmailService emailService;
+    BankAccountService bankAccountService;
 
     @BeforeEach
     void setUp() {
         paymentRepository = Mockito.mock(PaymentRepository.class);
         bankAccountRepository = Mockito.mock(BankAccountRepository.class);
         contractRepository = Mockito.mock(ContractRepository.class);
-        paymentService = new PaymentService(paymentRepository, bankAccountRepository, contractRepository);
+        accountHistoryRepository = Mockito.mock(AccountHistoryRepository.class);
+        userRepository = Mockito.mock(UserRepository.class);
+        emailService = Mockito.mock(EmailService.class);
+        bankAccountService = Mockito.mock(BankAccountService.class);
+        paymentService = new PaymentService(paymentRepository, bankAccountRepository, contractRepository,
+                accountHistoryRepository, userRepository, emailService, bankAccountService);
     }
 
     @Test
@@ -136,7 +139,39 @@ class PaymentServiceTest {
 
     @Test
     void create() {
+        Long contractID = 1L;
+        String userName = "hrisiA";
+        Contract contract = new Contract();
+        contract.setId(contractID);
+        Currency currency = Currency.BGN;
+        PaymentRequest paymentRequest = new PaymentRequest(contractID, "DE75512108001245126199",
+                "GB33BUKB20201555555555", 150.0, currency.toString());
+        User user = new User(1L, "Hristina", "Ablanska", "hrisiA", "1234",
+                "hr.abl@gmail.com", "0888524163", "test", Role.STORE);
 
+        BankAccount fromBankAccount = new BankAccount(1L, "DE75512108001245126199",
+                2000.0, Currency.BGN, BankAccountStatus.ACTIVE, user);
+        BankAccount toBankAccount = new BankAccount(5L, "GB33BUKB20201555555555",
+                1000.0, Currency.BGN, BankAccountStatus.ACTIVE, user);
+
+        Mockito.when(bankAccountRepository.findByIBAN(paymentRequest.fromIBAN())).thenReturn(fromBankAccount);
+        Mockito.when(bankAccountRepository.findByIBAN(paymentRequest.toIBAN())).thenReturn(toBankAccount);
+
+        Payment payment = new Payment();
+        payment.setDate(LocalDate.now());
+        payment.setFromBankAccount(bankAccountRepository.findByIBAN(paymentRequest.fromIBAN()));
+        payment.setToBankAccount(bankAccountRepository.findByIBAN(paymentRequest.toIBAN()));
+        Mockito.when(contractRepository.getReferenceById(paymentRequest.contractID())).thenReturn(contract);
+        Mockito.when(userRepository.findByUserName(userName)).thenReturn(user);
+        payment.setContract(contract);
+        payment.setAmount(paymentRequest.amount());
+        payment.setCurrency(Currency.getCurrencyFromString(paymentRequest.currency()));
+
+        paymentService.create(paymentRequest, userName);
+        Mockito.verify(paymentRepository, Mockito.times(1)).saveAndFlush(any());
+        Mockito.verify(accountHistoryRepository, Mockito.times(1)).saveAndFlush(any());
+        Mockito.verify(bankAccountService, Mockito.times(1)).moneyTransfer(fromBankAccount,
+                toBankAccount, paymentRequest.amount(), currency);
     }
 
     @Test

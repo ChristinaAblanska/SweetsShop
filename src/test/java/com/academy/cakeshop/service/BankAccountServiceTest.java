@@ -1,6 +1,7 @@
 package com.academy.cakeshop.service;
 
 import com.academy.cakeshop.dto.BankAccountRequest;
+import com.academy.cakeshop.dto.BankAccountRequestCurrencyChange;
 import com.academy.cakeshop.dto.BankAccountResponse;
 import com.academy.cakeshop.enumeration.BankAccountStatus;
 import com.academy.cakeshop.enumeration.Currency;
@@ -11,30 +12,29 @@ import com.academy.cakeshop.persistance.entity.BankAccount;
 import com.academy.cakeshop.persistance.entity.User;
 import com.academy.cakeshop.persistance.repository.BankAccountRepository;
 import com.academy.cakeshop.persistance.repository.UserRepository;
+import com.academy.cakeshop.mail.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class BankAccountServiceTest {
-    @InjectMocks
     BankAccountService bankAccountService;
-    @Mock
     BankAccountRepository bankAccountRepository;
-    @Mock
     UserRepository userRepository;
+    EmailService emailService;
 
     @BeforeEach
     void setUp() {
         bankAccountRepository = Mockito.mock(BankAccountRepository.class);
         userRepository = Mockito.mock(UserRepository.class);
-        bankAccountService = new BankAccountService(bankAccountRepository, userRepository);
+        emailService = Mockito.mock(EmailService.class);
+        bankAccountService = new BankAccountService(bankAccountRepository, userRepository, emailService);
     }
 
     @Test
@@ -160,25 +160,26 @@ class BankAccountServiceTest {
         assertFalse(bankAccountService.existsByIBAN(IBAN));
     }
 
-//    @Test
-//    void create() {
-//        BankAccountRequest bankAccountRequest = new BankAccountRequest("GB33BUKB20201555555555",
-//                100.0, "BGN");
-//        String userName = "hrisiA";
-//        User user = new User(1L, "Hristina", "Ablanska", "hrisiA", "1234",
-//                "hr.abl@gmail.com", "0888524163", "test", Role.STORE);
-//        Mockito.when(userRepository.findByUserName(userName)).thenReturn(user);
-//
-//        BankAccount bankAccount = new BankAccount();
-//        bankAccount.setIban(bankAccountRequest.iban());
-//        bankAccount.setBalance(bankAccountRequest.balance());
-//        bankAccount.setCurrency(Currency.getCurrencyFromString(bankAccountRequest.currency()));
-//        bankAccount.setBankAccountStatus(BankAccountStatus.ACTIVE);
-//        bankAccount.setUser(user);
-//
-//        bankAccountService.create(bankAccountRequest, userName);
-//        Mockito.verify(bankAccountRepository).saveAllAndFlush(bankAccount);
-//    }
+    @Test
+    void create() {
+        BankAccountRequest bankAccountRequest = new BankAccountRequest("GB33BUKB20201555555555",
+                100.0, "BGN");
+        String userName = "hrisiA";
+        User user = new User(1L, "Hristina", "Ablanska", "hrisiA", "1234",
+                "hr.abl@gmail.com", "0888524163", "test", Role.STORE);
+        Mockito.when(userRepository.findByUserName(userName)).thenReturn(user);
+        Mockito.when(bankAccountRepository.saveAndFlush(any())).thenReturn(new BankAccount());
+
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.setIban(bankAccountRequest.iban());
+        bankAccount.setBalance(bankAccountRequest.balance());
+        bankAccount.setCurrency(Currency.getCurrencyFromString(bankAccountRequest.currency()));
+        bankAccount.setBankAccountStatus(BankAccountStatus.ACTIVE);
+        bankAccount.setUser(user);
+
+        bankAccountService.create(bankAccountRequest, userName);
+        Mockito.verify(bankAccountRepository).saveAndFlush(any());
+    }
 
     @Test
     void givenValidUserId_whenUpdatingBankAccountCurrency_thenReturnUpdatedRowsCount() {
@@ -238,7 +239,6 @@ class BankAccountServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
-    //TODO revise with Nadeto
     @Test
     void deleteByID() {
         String IBAN = "GB33BUKB20201555555555";
@@ -377,5 +377,64 @@ class BankAccountServiceTest {
         String expectedMessage = "BankAccount with iban: " + IBAN + "does not exist!";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void givenValidInput_whenUpdatingBankAccount_thenUpdateAccountCurrencyAndBalance() {
+        Long userId = 3L;
+        String iban = "GB33BUKB20201555555555";
+        int expectedUpdatedRows = 1;
+        BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange = new BankAccountRequestCurrencyChange(
+                "GB33BUKB20201555555555", 15000.0, "BGN", "EUR");
+
+        Currency currency = Currency.getCurrencyFromString(bankAccountRequestCurrencyChange.fromCurrency());
+        User user = new User(userId, "Christina", "Ablanska", "hrisiA", "1234",
+                "hr.abl@gmail.com", "0888524163", "test", Role.MALL);
+        BankAccount expectedBankAccount = new BankAccount(1L, "GB33BUKB20201555555555",
+                bankAccountRequestCurrencyChange.balance(), currency, BankAccountStatus.ACTIVE, user);
+
+        double balance = bankAccountRequestCurrencyChange.balance() * 0.51;
+        Currency toCurrency = Currency.getCurrencyFromString(bankAccountRequestCurrencyChange.toCurrency());
+        Mockito.when(bankAccountRepository.findByIbanEquals(iban)).thenReturn(expectedBankAccount);
+        Mockito.when(bankAccountRepository.findByUserID(userId)).thenReturn(expectedBankAccount);
+        Mockito.when(bankAccountRepository.updateBalanceBy(balance, userId)).thenReturn(expectedUpdatedRows);
+        Mockito.when(bankAccountRepository.updateCurrencyBy(toCurrency, userId)).thenReturn(expectedUpdatedRows);
+
+        int actualUpdatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId);
+
+        assertEquals(expectedUpdatedRows * 2, actualUpdatedRows);
+    }
+
+    //TODO
+    @Test
+    void givenValidInput_whenUpdatingBankAccount_thenExceptionThrown() {
+        Long userId = 3L;
+        String iban = "GB33BUKB20201555555555";
+        int expectedUpdatedRows = 1;
+        BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange = new BankAccountRequestCurrencyChange(
+                "GB33BUKB20201555555555", 15000.0, "", "");
+
+//        Currency currency = Currency.getCurrencyFromString(bankAccountRequestCurrencyChange.fromCurrency());
+//        User user = new User(userId, "Christina", "Ablanska", "hrisiA", "1234",
+//                "hr.abl@gmail.com", "0888524163", "test", Role.MALL);
+//        BankAccount expectedBankAccount = new BankAccount(1L, "GB33BUKB20201555555555",
+//                bankAccountRequestCurrencyChange.balance(), currency, BankAccountStatus.ACTIVE, user);
+//
+//        double balance = bankAccountRequestCurrencyChange.balance() * 0.51;
+//        Currency toCurrency = Currency.getCurrencyFromString(bankAccountRequestCurrencyChange.toCurrency());
+//        Mockito.when(bankAccountRepository.findByIbanEquals(iban)).thenReturn(expectedBankAccount);
+//        Mockito.when(bankAccountRepository.findByUserID(userId)).thenReturn(expectedBankAccount);
+//        Mockito.when(bankAccountRepository.updateBalanceBy(balance, userId)).thenReturn(expectedUpdatedRows);
+//        Mockito.when(bankAccountRepository.updateCurrencyBy(toCurrency, userId)).thenReturn(expectedUpdatedRows);
+//
+//        int actualUpdatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId));
+        String expectedMessage = "Invalid input data for bankAccount currency change!";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+
+//        assertEquals(expectedUpdatedRows * 2, actualUpdatedRows);
     }
 }

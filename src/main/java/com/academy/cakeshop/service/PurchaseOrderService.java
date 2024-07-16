@@ -1,18 +1,19 @@
 package com.academy.cakeshop.service;
 
-
-import com.academy.cakeshop.dto.ArticleRequestDTO;
 import com.academy.cakeshop.dto.PurchaseOrderRequestDTO;
+import com.academy.cakeshop.dto.PurchaseStatDTO;
 import com.academy.cakeshop.enumeration.BankAccountStatus;
+import com.academy.cakeshop.enumeration.ContractStatus;
+import com.academy.cakeshop.errorHandling.BusinessNotFound;
 import com.academy.cakeshop.persistance.entity.*;
-import com.academy.cakeshop.persistance.repository.ContractRepository;
-import com.academy.cakeshop.persistance.repository.ProductRepository;
-import com.academy.cakeshop.persistance.repository.PurchaseOrderRepository;
-import com.academy.cakeshop.persistance.repository.UnitRepository;
+import com.academy.cakeshop.persistance.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,9 @@ public class PurchaseOrderService {
     private final ProductRepository productRepository;
     private final UnitRepository unitRepository;
     private final ContractRepository contractRepository;
+    private final UserRepository userRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public PurchaseOrder createPurchaseOrder(PurchaseOrderRequestDTO purchaseOrderRequestDTO) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
@@ -90,6 +94,33 @@ public class PurchaseOrderService {
             purchaseOrderRepository.deleteById(id);
         } else {
             throw new RuntimeException("Purchase order not found");
+        }
+    }
+
+    // Всеки от търговците има достъп до статистика за оборота по дни, печалба и наличности.
+
+    public List<PurchaseStatDTO> getSupplierPurchaseStatistics(String userName) {
+        User user = userRepository.findByUserName(userName);
+        Contract contract = contractRepository.findByUserIdActive(user.getId(), ContractStatus.APPROVED);
+        if (contract != null) {
+            List<PurchaseOrder> orders = purchaseOrderRepository.findByContractIDOrderByDate(contract.getId());
+            List<PurchaseStatDTO> purchaseStatDTOList = new ArrayList<>();
+
+            for (PurchaseOrder order : orders) {
+                Product product = order.getProduct();
+                Unit unit = product.getUnit();
+                double gain = product.getPricePerUnit() * order.getQuantity();
+                PurchaseStatDTO purchaseStatDTO = new PurchaseStatDTO(order.getDate(), contract.getId(),
+                        contract.getContractStatus().toString(), product.getName(), order.getQuantity(), unit.getName(),
+                        order.getPrice(), gain);
+                purchaseStatDTOList.add(purchaseStatDTO);
+            }
+            logger.info("Request to DB: purchase order statistics for userName" + userName);
+            return purchaseStatDTOList;
+        } else {
+            BusinessNotFound businessNotFound = new BusinessNotFound("No active contracts found for userName: " + userName);
+            logger.error("Error: No active contracts found for userName: {}", userName, businessNotFound);
+            throw businessNotFound;
         }
     }
 }

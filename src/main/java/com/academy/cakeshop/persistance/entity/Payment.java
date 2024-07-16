@@ -20,31 +20,31 @@ import java.time.LocalDate;
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private Long id;
 
-    @Column(name = "date", nullable = false)
+    @Column(name = "date")
     @JdbcTypeCode(SqlTypes.DATE)
     private LocalDate date;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "contract_id", nullable = false)
+    @JoinColumn(name = "contract_id")
     private Contract contract;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "account_source_id", nullable = false)
+    @JoinColumn(name = "account_source_id")
     private BankAccount fromBankAccount;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "account_destination_id", nullable = false)
+    @JoinColumn(name = "account_destination_id")
     private BankAccount toBankAccount;
 
-    @Column(name = "amount", nullable = false)
+    @Column(name = "amount")
     @JdbcTypeCode(SqlTypes.DECIMAL)
     private Double amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "currency", nullable = false)
+    @Column(name = "currency")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private Currency currency;
 }

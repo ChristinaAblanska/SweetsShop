@@ -20,30 +20,29 @@ import org.hibernate.type.SqlTypes;
 public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
+    @Column(name = "id", unique = true)
     private Long id;
 
-    @Column(name = "contract_sum", nullable = false, precision = 19, scale = 2)
+    @Column(name = "contract_sum", precision = 19, scale = 2)
     @JdbcTypeCode(SqlTypes.DECIMAL)
     private Double contractSum;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "currency", nullable = false)
+    @Column(name = "currency")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private Currency currency;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "contract_period", nullable = false)
+    @Column(name = "contract_period")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private ContractPeriod contractPeriod;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "contract_status", nullable = false)
+    @Column(name = "contract_status")
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private ContractStatus contractStatus;
 
-    // TODO - validate user
-    @OneToOne(optional = false, orphanRemoval = true)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
 }
