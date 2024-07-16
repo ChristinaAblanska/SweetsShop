@@ -29,13 +29,18 @@ public class PaymentController {
         return new ResponseEntity<>(paymentResponse, HttpStatus.OK);
     }
 
-    //TODO - test
-//    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-//    @PreAuthorize("hasRole('STORE')")
-//    public ResponseEntity<?> createPayment(Principal principal,  @Valid @RequestBody PaymentRequest paymentRequest) {
-//        paymentService.create(paymentRequest, principal.getName());
-//        return new ResponseEntity<>(HttpStatus.CREATED);
-//    }
+    @PostMapping("/income")
+    @PreAuthorize("hasRole='STORE'")
+    public ResponseEntity<String> distributeIncome(
+            @RequestParam("saleDate") LocalDate saleDate,
+            @RequestParam("rentAmount") double rentAmount) {
+        try {
+            rentService.distributeIncome(saleDate, rentAmount);
+            return ResponseEntity.ok("Income distributed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error distributing income: " + e.getMessage());
+        }
+    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
