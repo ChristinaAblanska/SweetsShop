@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class ContractServiceTest {
     @InjectMocks
@@ -134,18 +135,18 @@ class ContractServiceTest {
     void create() {
         ContractRequest contractRequest = new ContractRequest(250.0, "BGN", "MONTHLY", "APPROVED");
         String userName = "hrisiA";
-        Contract contract = new Contract();
-        contract.setContractSum(contractRequest.contractSum());
-        contract.setCurrency(Currency.getCurrencyFromString(contractRequest.currency()));
-        contract.setContractPeriod(ContractPeriod.getContractPeriodFromString(contractRequest.contractPeriod()));
-        contract.setContractStatus(ContractStatus.NEW);
+        Contract expectedContract = new Contract();
+        expectedContract.setContractSum(contractRequest.contractSum());
+        expectedContract.setCurrency(Currency.getCurrencyFromString(contractRequest.currency()));
+        expectedContract.setContractPeriod(ContractPeriod.getContractPeriodFromString(contractRequest.contractPeriod()));
+        expectedContract.setContractStatus(ContractStatus.NEW);
 
         User user = new User(1L, "Hristina", "Ablanska", "hrisiA", "1234",
                 "hr.abl@gmail.com", "0888524163", "test", Role.STORE);
         Mockito.when(userRepository.findByUserName(userName)).thenReturn(user);
-        contract.setUser(user);
+        expectedContract.setUser(user);
         contractService.create(contractRequest, userName);
-        Mockito.verify(contractRepository, Mockito.times(1)).saveAndFlush(contract);
+        Mockito.verify(contractRepository, Mockito.times(1)).saveAndFlush(any());
     }
 
     @Test

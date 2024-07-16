@@ -1,10 +1,10 @@
 package com.academy.cakeshop.persistance.repository;
 
+import com.academy.cakeshop.enumeration.Role;
 import com.academy.cakeshop.persistance.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,4 +32,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u where u.userName = ?1")
     User findByUserName(String userName);
+
+    Optional<User> findByUserNameLike(String userName);
+
+    @Query("select u from User u where u.role = ?1")
+    User findByRole(Role role);
 }

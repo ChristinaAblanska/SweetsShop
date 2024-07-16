@@ -6,11 +6,12 @@ import com.academy.cakeshop.dto.PaymentResponse;
 import com.academy.cakeshop.service.ContractService;
 import com.academy.cakeshop.service.PaymentService;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,18 +19,15 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/contracts")
 @Validated
 public class ContractController {
     private final ContractService contractService;
     private final PaymentService paymentService;
 
-    public ContractController(ContractService contractService, PaymentService paymentService) {
-        this.contractService = contractService;
-        this.paymentService = paymentService;
-    }
-
     @GetMapping
+    @PreAuthorize("hasAnyRole('STORE', 'MALL', 'SUPPLIER', 'MANAGER', 'EMPLOYEE', 'ADMIN')")
     public ResponseEntity<ContractResponse> getById(@NotNull(message = "Required field!")
                                                     @Min(value = 1, message = "No negative values allowed")
                                                     @RequestParam(name = "contractId")
@@ -39,32 +37,37 @@ public class ContractController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> create(Principal principal, @RequestBody ContractRequest contractRequest) {
+    @PreAuthorize("hasAnyRole('STORE', 'ADMIN')")
+    public String create(Principal principal, @RequestBody ContractRequest contractRequest) {
         String userName = principal.getName();
         contractService.create(contractRequest, userName);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return "Contract successfully created!\nДоговорът беше успешно създаден!";
     }
 
     @PatchMapping(value = "/{contractId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateContractStatus(@RequestBody ContractRequest contractRequest,
+    @PreAuthorize("hasRole('ADMIN')")
+    public String updateContractStatus(@RequestBody ContractRequest contractRequest,
                                                   @NotNull(message = "Required field!")
-                                                  @Min(value = 1, message = "No negative values allowed!") Long contractIdId) {
-        int updatedRows = contractService.updateContractStatus(contractRequest.contractStatus(), contractIdId);
+                                                  @Min(value = 1, message = "No negative values allowed!")
+                                                  @PathVariable Long contractId) {
+        int updatedRows = contractService.updateContractStatus(contractRequest.contractStatus(), contractId);
         if (updatedRows > 0) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return "Contract status successfully changed!\nСтатусът беше променен успешно!";
         } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return "Opps, something went wrong!\nВъзникна проблем!";
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable @NotNull(message = "Required field!")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteById(@PathVariable @NotNull(message = "Required field!")
                                         @Min(value = 1, message = "No negative values allowed!") Long id) {
         contractService.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return "Contract successfully deleted!\nДоговорът беше изтринт успешно!";
     }
 
     @GetMapping("/payments/{contractId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STORE')")
     public ResponseEntity<List<PaymentResponse>> getAllPaymentsByContractId(@NotNull(message = "Required field!")
                                                                             @Min(value = 1, message = "No negative values allowed!")
                                                                             @PathVariable Long contractId) {

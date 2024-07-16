@@ -14,4 +14,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Lo
 
     @Query("select po from PurchaseOrder po WHERE po.date = date")
     List<PurchaseOrderRequestDTO> findByOrderDate(LocalDate date);
+
+    @Query("select p from PurchaseOrder p where p.contract.id = ?1 order by p.date DESC")
+    List<PurchaseOrder> findByContractIDOrderByDate(Long id);
 }

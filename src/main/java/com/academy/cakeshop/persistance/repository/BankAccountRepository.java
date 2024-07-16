@@ -1,5 +1,6 @@
 package com.academy.cakeshop.persistance.repository;
 
+import com.academy.cakeshop.enumeration.BankAccountStatus;
 import com.academy.cakeshop.enumeration.Currency;
 import com.academy.cakeshop.persistance.entity.BankAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,13 @@ public interface BankAccountRepository extends JpaRepository<BankAccount, Long> 
 
     @Query("select b from BankAccount b where b.iban = ?1")
     BankAccount findByIBAN(String iban);
+
+    @Transactional
+    @Modifying
+    @Query("update BankAccount b set b.bankAccountStatus = ?1 where b.iban = ?2")
+    int updateBankAccountStatus(BankAccountStatus bankAccountStatus, String iban);
+
+    @Query("select b from BankAccount b where b.user.id = ?1 and b.currency = ?2")
+    BankAccount findByUserIdAndCurrency(Long id, Currency currency);
+
 }

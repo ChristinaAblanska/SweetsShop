@@ -24,4 +24,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("select c from Contract c where c.user.id = ?1")
     List<Contract> findAllByUserId(Long id);
+
+    @Query("select c from Contract c where c.user.id = ?1 and c.contractStatus = ?2")
+    Contract findByUserIdActive(Long id, ContractStatus contractStatus);
 }
