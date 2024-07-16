@@ -8,20 +8,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 
-public class ArticleRequestDTO {
+public record ArticleRequestDTO(
 
-    @NotBlank(message = "Article name is mandatory")
-    private String articleName;
+        @NotBlank(message = "Article name is mandatory")
+        String articleName,
 
-    @NotNull(message = "Price is mandatory")
-    @Positive(message = "Price must be a positive value")
-    private Double price;
+        @NotNull(message = "Price is mandatory")
+        @Positive(message = "Price must be a positive value")
+        Double price,
 
-    @NotNull(message = "Product ID is mandatory")
-    private Long productId;
+        @NotNull(message = "Product ID is mandatory")
+        Long productId
+) {
 }

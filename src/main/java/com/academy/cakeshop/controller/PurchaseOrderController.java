@@ -1,20 +1,15 @@
 package com.academy.cakeshop.controller;
 
-import com.academy.cakeshop.dto.ArticleRequestDTO;
 import com.academy.cakeshop.dto.PurchaseOrderRequestDTO;
-import com.academy.cakeshop.persistance.entity.Article;
 import com.academy.cakeshop.persistance.entity.PurchaseOrder;
 import com.academy.cakeshop.service.PurchaseOrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+
 
 @RequiredArgsConstructor
 @RestController
