@@ -1,6 +1,7 @@
 package com.academy.cakeshop.controller;
 
 import com.academy.cakeshop.dto.*;
+import com.academy.cakeshop.errorHandling.AccessDenied;
 import com.academy.cakeshop.service.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -40,16 +41,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/v1/users/{userId}")
+    @GetMapping("/api/v1/users/self")
     @PreAuthorize("hasAnyRole('STORE', 'MALL', 'SUPPLIER', 'MANAGER', 'EMPLOYEE', 'CLIENT', 'ADMIN')")
-    public ResponseEntity<UserResponse> getById(@NotNull(message = "Required field!")
-                                                @Min(value = 1, message = "No negative values allowed!")
-                                                @PathVariable(name = "userId")
-                                                Long id) {
-        UserResponse userResponse = userService.getById(id);
-        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    public ResponseEntity<UserDetailsDTO> getById(Principal principal) {
+        UserDetailsDTO userDetailsDTO = userService.getByUserName(principal.getName());
+        return new ResponseEntity<>(userDetailsDTO, HttpStatus.OK);
     }
 
+    // Ststs
     @GetMapping("/api/v1/users/payments/stats")
     @PreAuthorize("hasAnyRole('MANAGER', 'EMPLOYEE')")
     public ResponseEntity<List<EmployeePaymentDTO>> getEmployeePaymentStat(Principal principal) {
@@ -68,7 +67,8 @@ public class UserController {
     @PreAuthorize("hasRole('MANAGER')")
     public String getStoreSaleStatDaysLeftToPayRent() {
         int daysLeftToPayRent = saleService.getHowManyDaysLeftToPayRent();
-        return "Days left to pay rent: " + daysLeftToPayRent;
+        return "Days left to pay rent: " + daysLeftToPayRent
+                + "\nОставащи дни до събиране на сумата за наем: " + daysLeftToPayRent;
     }
 
     @GetMapping("/api/v1/users/purchases")
@@ -125,16 +125,15 @@ public class UserController {
         return new ResponseEntity<>(bankAccountResponse, HttpStatus.OK);
     }
 
-    @PatchMapping("/api/v1/users/bankAccounts/{userId}")
+    @PatchMapping("/api/v1/users/bankAccounts/currency")
     @PreAuthorize("hasAnyRole('SUPPLIER', 'ADMIN')")
-    public String updateAccount(@RequestBody BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange,
-                                           @RequestParam(name = "userId") @NotNull(message = "Required field!")
-                                           @Min(value = 1, message = "No negative values allowed!") Long userId) {
-        int updatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId);
-        if (updatedRows > 0) {
-            return "Currency successfully changed!\nВалутата бе успешно променена!";
-        } else {
-            return "Opps, we encountered a problem!\nВъзникна проблем!";
+    public String updateAccount(Principal principal, @RequestBody BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange) {
+        try {
+            int updatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, principal.getName());
+            if (updatedRows > 0) {return "Currency successfully changed!\nВалутата бе успешно променена!";}
+            else return "Something went wrong!\nВъзникна проблем!";
+        } catch (AccessDenied exception) {
+            return exception.getMessage();
         }
     }
 
@@ -143,7 +142,11 @@ public class UserController {
     public String closeAccount(Principal principal, @RequestParam(name = "iban")
                                             @NotNull(message = "Required field!")
                                            String iban) {
-        bankAccountService.closeAccount(iban, principal.getName());
-        return "Account successfully closed!\nСметката беше успешно закрита!";
+        try {
+            bankAccountService.closeAccount(iban, principal.getName());
+            return "Account successfully closed!\nСметката беше успешно закрита!";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        }
     }
 }

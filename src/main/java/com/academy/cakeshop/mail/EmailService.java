@@ -52,11 +52,36 @@ public class EmailService {
         }
     }
 
+    public void sendRentApprovalEmail(double rent, String userName) {
+        User mall = userRepository.findByUserName(userName);
+        User store = userRepository.findByRole(Role.STORE);
+        String subject = "Rent Approval contract request";
+        String toList = store.getEmail();
+        String body = "Dear Sir/Madame " + store.getLastName() + ", \n"
+                + "We would like to approve your proposal for new monthly rent in the amount of "
+                + rent
+                + "\nBest regards,\nMall team";
+        try {
+            EmailDto emailDto = new EmailDto(subject, toList, body);
+            logger.info("Request to EmailService: send email with subject" + emailDto.getSubject()
+                    + " to email address: " + emailDto.getToList());
+            sendSimpleEmail(emailDto);
+
+            EmailDto emailDtoCC = new EmailDto("Copy of rent approval", mall.getEmail(), body);
+            logger.info("Request to EmailService: send email with subject" + emailDto.getSubject()
+                    + " to email address: " + emailDto.getToList());
+            sendSimpleEmail(emailDtoCC);
+        } catch (EmailNotSent e) {
+            System.out.println("Email not sent! Please try again!");
+            logger.error("Error: Email for approve rent request not sent! Approved rent amount {}", rent, e);
+        }
+    }
+
     public void sendEarlyPaymentNotice(double amount, Long supplyOrderId, Long contractId, String userName) {
         User user = userRepository.findByUserName(userName);
 
         String subject = "Early Payment Notice - contractId: " + contractId;
-        String toList = "codeacademyproject.cakeshop@gmail.com";
+        String toList = user.getEmail();
         String body = "Dear Mrs. Store,\n"
                 + "Please note that I would like to receive early payment for supply order#: "
                 + supplyOrderId
@@ -75,4 +100,5 @@ public class EmailService {
             logger.error("Error: Email for early payment not sent! Payment amount {}", amount, e);
         }
     }
+
 }

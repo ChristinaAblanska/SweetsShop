@@ -384,6 +384,7 @@ class BankAccountServiceTest {
         Long userId = 3L;
         String iban = "GB33BUKB20201555555555";
         int expectedUpdatedRows = 1;
+        String userName = "hrisiA";
         BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange = new BankAccountRequestCurrencyChange(
                 "GB33BUKB20201555555555", 15000.0, "BGN", "EUR");
 
@@ -395,12 +396,13 @@ class BankAccountServiceTest {
 
         double balance = bankAccountRequestCurrencyChange.balance() * 0.51;
         Currency toCurrency = Currency.getCurrencyFromString(bankAccountRequestCurrencyChange.toCurrency());
+        Mockito.when(userRepository.findByUserName(userName)).thenReturn(user);
         Mockito.when(bankAccountRepository.findByIbanEquals(iban)).thenReturn(expectedBankAccount);
         Mockito.when(bankAccountRepository.findByUserID(userId)).thenReturn(expectedBankAccount);
         Mockito.when(bankAccountRepository.updateBalanceBy(balance, userId)).thenReturn(expectedUpdatedRows);
         Mockito.when(bankAccountRepository.updateCurrencyBy(toCurrency, userId)).thenReturn(expectedUpdatedRows);
 
-        int actualUpdatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId);
+        int actualUpdatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userName);
 
         assertEquals(expectedUpdatedRows * 2, actualUpdatedRows);
     }
@@ -411,6 +413,7 @@ class BankAccountServiceTest {
         Long userId = 3L;
         String iban = "GB33BUKB20201555555555";
         int expectedUpdatedRows = 1;
+        String userName = "hrisiA";
         BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange = new BankAccountRequestCurrencyChange(
                 "GB33BUKB20201555555555", 15000.0, "", "");
 
@@ -430,7 +433,7 @@ class BankAccountServiceTest {
 //        int actualUpdatedRows = bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userId));
+                bankAccountService.updateBankAccount(bankAccountRequestCurrencyChange, userName));
         String expectedMessage = "Invalid input data for bankAccount currency change!";
         String actualMessage = exception.getMessage();
         assertEquals(expectedMessage, actualMessage);

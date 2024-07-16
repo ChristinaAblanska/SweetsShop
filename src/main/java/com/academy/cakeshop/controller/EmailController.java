@@ -20,6 +20,13 @@ public class EmailController {
         return "Rent contract sent!\nИзпратен договор за наем!";
     }
 
+    @GetMapping("/api/v1/emailService/contracts/rent/approved")
+    @PreAuthorize("hasRole('MALL')")
+    public String sendApprovedRentContractMail(Principal principal, @RequestParam double rent) {
+        emailService.sendRentApprovalEmail(rent, principal.getName());
+        return "Approved rent contract sent!\nИзпратенo одобрение за договор за наем!";
+    }
+
     @GetMapping("/api/v1/emailService/payments")
     @PreAuthorize("hasRole('SUPPLIER')")
     public String sendMail(Principal principal,

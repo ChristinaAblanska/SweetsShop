@@ -2,23 +2,26 @@ package com.academy.cakeshop.controller;
 
 import com.academy.cakeshop.dto.PaymentResponse;
 import com.academy.cakeshop.service.PaymentService;
+import com.academy.cakeshop.service.RentService;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/api/v1/payments")
+@RequiredArgsConstructor
 @Validated
 public class PaymentController {
     private final PaymentService paymentService;
+    private final RentService rentService;
 
-    public PaymentController(PaymentService paymentService) {
-        this.paymentService = paymentService;
-    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'STORE')")
