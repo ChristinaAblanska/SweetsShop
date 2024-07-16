@@ -156,7 +156,7 @@ public class BankAccountService {
                     bankAccountRepository.updateBankAccountStatus(BankAccountStatus.INACTIVE, iban);
                     logger.info("Request to DB: update bankAccount status to INACTIVE for IBAN: " + iban);
                 } else {
-                    IllegalArgumentException illegalArgumentException = new IllegalArgumentException("iban" + iban
+                    IllegalArgumentException illegalArgumentException = new IllegalArgumentException("iban " + iban
                             + " is already CLOSED");
                     logger.error("iban {} is already CLOSED", iban, illegalArgumentException);
                     throw illegalArgumentException;
@@ -278,7 +278,7 @@ public class BankAccountService {
 
 
     @Transactional
-    public int updateBankAccount(BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange, Long userId) {
+    public int updateBankAccount(BankAccountRequestCurrencyChange bankAccountRequestCurrencyChange, String userName) {
         int updatedRows = 0;
         if (!bankAccountRequestCurrencyChange.toCurrency().isEmpty() && !bankAccountRequestCurrencyChange.fromCurrency().isEmpty()
                 && !bankAccountRequestCurrencyChange.fromCurrency().equalsIgnoreCase(bankAccountRequestCurrencyChange.toCurrency())) {
@@ -291,10 +291,13 @@ public class BankAccountService {
                 } else {
                     balance = 1.96 * balance;
                 }
+                User user = userRepository.findByUserName(userName);
+                Long userId = user.getId();
                 updatedRows += updateBankAccountBalance(balance, userId);
                 updatedRows += updateBankAccountCurrency(Currency.getCurrencyFromString(bankAccountRequestCurrencyChange.toCurrency()), userId);
                 logger.info("Request to BankAccountService: update IBAN: " + iban
                 + " to currency: " + bankAccountRequestCurrencyChange.toCurrency());
+                bankAccountRepository.save(bankAccount);
                 // send mail
                 return updatedRows;
             } else {

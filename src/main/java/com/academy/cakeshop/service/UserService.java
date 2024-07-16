@@ -40,6 +40,24 @@ public class UserService {
         }
     }
 
+    public UserDetailsDTO getByUserName(String userName) {
+        User user = userRepository.findByUserName(userName);
+        logger.info("Request to DB: get user with userName: {}", userName);
+        if (user != null) {
+            logger.info("Request to DB: get bankAccount by userId: {}", user.getId());
+            BankAccountResponse bankAccountResponse = bankAccountService.getByUserID(user.getId());
+            logger.info("Request to Service: return user account info: userName= {}", userName);
+            String fullName = user.getFirstName() + " " + user.getLastName();
+            return new UserDetailsDTO(fullName, userName, user.getEmail(), user.getRole().toString(),
+                    bankAccountResponse.iban(), bankAccountResponse.currency(),
+                    bankAccountResponse.balance(), bankAccountResponse.status());
+        } else {
+            BusinessNotFound businessNotFound = new BusinessNotFound("UserName: " + userName + " not found!");
+            logger.error("Error: getByUserName: userName: {} not found!", userName, businessNotFound);
+            throw businessNotFound;
+        }
+    }
+
     public List<UserResponse> getAll() {
         List<User> users = userRepository.findAll();
         if (!users.isEmpty()) {
@@ -225,4 +243,5 @@ public class UserService {
         return new BankAccountRequest(newUserAccountDTO.iban(), newUserAccountDTO.balance(),
                 newUserAccountDTO.currency());
     }
+
 }

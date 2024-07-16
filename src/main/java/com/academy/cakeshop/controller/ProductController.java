@@ -5,11 +5,14 @@ import com.academy.cakeshop.errorHandling.BusinessNotFound;
 import com.academy.cakeshop.persistance.entity.Product;
 import com.academy.cakeshop.persistance.entity.Storage;
 import com.academy.cakeshop.service.ProductService;
+import com.academy.cakeshop.service.RentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +20,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
 public class ProductController {
-    private ProductService productService;
+
+    private final ProductService productService;
+    private final RentService rentService;
 
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
