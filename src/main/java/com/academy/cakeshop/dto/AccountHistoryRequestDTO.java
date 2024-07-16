@@ -11,28 +11,26 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class AccountHistoryRequestDTO {
 
-    @NotNull(message = "Date cannot be null")
-    private LocalDate date;
+public record AccountHistoryRequestDTO(
+
+        @NotNull(message = "Date cannot be null")
+        LocalDate date,
 
 
-    @NotBlank(message = "From account cannot be blank")
-    @IBAN(message = "Invalis fromAccount IBAN")
-    private String fromAccount;
+        @NotBlank(message = "From account cannot be blank")
+        @IBAN(message = "Invalis fromAccount IBAN")
+        String fromAccount,
 
-    @NotBlank(message = "To account cannot be blank")
-    @IBAN(message = "Invalis fromAccount IBAN")
-    private String toAccount;
+        @NotBlank(message = "To account cannot be blank")
+        @IBAN(message = "Invalis fromAccount IBAN")
+        String toAccount,
 
-    @NotNull(message = "Amount cannot be null")
-    @Positive(message = "Amount must be positive")
-    private Double amount;
+        @NotNull(message = "Amount cannot be null")
+        @Positive(message = "Amount must be positive")
+        Double amount,
 
-    @NotBlank(message = "Currency cannot be blank")
-    private String currency;
+        @NotBlank(message = "Currency cannot be blank")
+        String currency
+) {
 }

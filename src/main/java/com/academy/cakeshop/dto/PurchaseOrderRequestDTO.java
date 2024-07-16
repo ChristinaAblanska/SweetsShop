@@ -10,36 +10,32 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class PurchaseOrderRequestDTO {
-    @NotNull(message = "Quantity is mandatory")
-    @Positive(message = "Quantity must be a positive value")
-    private Integer quantity;
 
-    @NotNull(message = "Price is mandatory")
-    @Positive(message = "Price must be a positive value")
-    private Double price;
+public record PurchaseOrderRequestDTO(
+        @NotNull(message = "Quantity is mandatory")
+        @Positive(message = "Quantity must be a positive value")
+        Integer quantity,
 
+        @NotNull(message = "Price is mandatory")
+        @Positive(message = "Price must be a positive value")
+        Double price,
+        @NotBlank(message = "Date is mandatory")
+        LocalDate date,
 
-    @NotBlank(message = "Date is mandatory")
-    private LocalDate date;
+        @NotBlank(message = "Status is mandatory")
+        String status,
 
-    @NotBlank(message = "Status is mandatory")
-    private String status;
+        @NotNull(message = "Product ID is mandatory")
+        Long productId,
 
-    @NotNull(message = "Product ID is mandatory")
-    private Long productId;
+        @NotNull(message = "Unit ID is mandatory")
+        Long unitId,
 
-    @NotNull(message = "Unit ID is mandatory")
-    private Long unitId;
+        @NotNull(message = "Status is mandatory")
+        String bankAccountStatus,
 
-    @NotNull(message = "Status is mandatory")
-    private String bankAccountStatus;
+        @NotNull(message = "Contract ID is mandatory")
+        Long contractId
 
-    @NotNull(message = "Contract ID is mandatory")
-    private Long contractId;
-
+) {
 }

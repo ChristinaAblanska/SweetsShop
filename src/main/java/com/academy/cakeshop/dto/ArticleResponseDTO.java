@@ -5,13 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class ArticleResponseDTO {
-    private String articleName;
-    private Double price;
-    private Long productId;
-    private String productName;
+
+public record ArticleResponseDTO(
+        String articleName,
+        Double price,
+        Long productId,
+        String productName
+) {
 }

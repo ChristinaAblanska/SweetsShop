@@ -5,7 +5,6 @@ import com.academy.cakeshop.persistance.entity.AccountHistory;
 import com.academy.cakeshop.service.AccountHistoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

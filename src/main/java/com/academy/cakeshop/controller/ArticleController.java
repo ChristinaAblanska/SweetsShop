@@ -14,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/article")
-public class ArticleControler {
+public class ArticleController {
 
     private final ArticleService articleService;
 
